@@ -55,6 +55,12 @@
 			}
 		});
 
+		$http.get("http://emanueloliveira.com/data-science/interest.php").then(
+			function(response) {
+				$scope.interest = response.data;
+			}
+		);
+
 		$scope.send = function() {
 			if (valid()) {
 				var selected = $scope.interest.filter(function(i) {
