@@ -55,7 +55,7 @@
 			}
 		});
 
-		$http.get("https://emanueloliveira.com/data-science/interest.php").then(
+		$http.get("http://emanueloliveira.com/data-science/interest.php").then(
 			function(response) {
 				$scope.interest = response.data;
 			}
@@ -66,7 +66,7 @@
 				var selected = $scope.interest.filter(function(i) {
 					return $scope.interest[i];
 				});
-				$http.post('https://emanueloliveira.com/data-science/interest.php', {
+				$http.post('http://emanueloliveira.com/data-science/add.php', {
 					name: $scope.scientist,
 					interest: selected
 				}).then(
