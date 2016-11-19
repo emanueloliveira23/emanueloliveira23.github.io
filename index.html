@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	
+	<head>
+		<meta charset="utf-8"/>
+		<title>DataScience</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	</head>
+
+	<style>
+	#validation_span {
+		color: red;
+		display: none;
+	}
+	</style>
+
+	<body ng-app="data-science" ng-controller="interestController">
+		<div>
+			<label> Cientista: <input type="text" ng-model="scientist"/></label>
+			<button ng-click="send()">Enviar Interesses</button>
+			<span ng-show="validation_span" id="validation_span">{{validation_span}}</span>
+			<table id="interest_table">
+				<tr ng-repeat="row in rows">
+					<td ng-repeat="col in row">
+						<input type="checkbox" ng-model="interest[col]"/>
+						{{col}}
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div>
+			<label>
+				Adicionar novo interesse:
+				<input type="text" ng-model="new_interest" ng-keypress="add_interest($event)" />
+			</label>
+		</div>
+	</body>
+
+	<script>
+
+	var app = angular.module('data-science', []);
+	app.controller('interestController', function($scope, $http) {
+
+		$scope.interest = [];
+
+		$scope.$watch('interest', function(value) {
+			if (value) {
+				var rows = [];
+				var i, j, chunk = 5;
+				for (var i = 0, j= value.length; i < j;  i += chunk) {
+				    var col = value.slice(i, i+chunk);
+				    rows.push(col);
+				}
+				$scope.rows = rows;
+			}
+		});
+
+		$scope.send = function() {
+			if (valid()) {
+				var selected = $scope.interest.filter(function(i) {
+					return $scope.interest[i];
+				});
+				$http.post('http://emanueloliveira.com/data-science/add.php', {
+					name: $scope.scientist,
+					interest: selected
+				}).then(
+					function(resp) {
+						alert("Interesses registrados!");
+						window.location.reload();
+					}, 
+					function(resp) {
+						alert("Falha ao registrar interesses");
+					}
+				);
+			}
+		}
+
+		$scope.add_interest = function($event) {
+			if ($event.keyCode == 13 || $event.keyCode == 10) {
+				$scope.interest[$scope.new_interest] = true;
+			}
+		}
+
+		function valid() {
+			if (!$scope.scientist) {
+				show_validation_span("Sem nome!");
+				return false;
+			} else {
+				hide_validation_span();
+			}
+
+			var selected = $scop.interest.find(function(i) {
+				return $scope.interest[i];
+			});
+			if (!checked) {
+				show_validation_span("Nenhum interesse marcado");
+				return false;
+			} else {
+				hide_validation_span();
+			}
+
+			return true;
+
+		}
+
+		function show_validation_span(error) {
+			$scope.validation_span = error;
+		}
+
+		function hide_validation_span() {
+			$scope.validation_span = undefined;
+		} 
+
+	});
+
+	</script>
+
+</html>
